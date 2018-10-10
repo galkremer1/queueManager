@@ -8,6 +8,7 @@ const MAXQUEUE = 10;
 const JOBTIME = 1000 * 15;
 const NETWORKTIME = 1000;
 const AUTOJOBTIMEOUT = 10 * 1000;
+let numberOfJobsInQueue = 0;
 
 app.use(cors())
 app.options('/task', cors()); // enable pre-flight request for DELETE request
@@ -15,6 +16,7 @@ app.options('/task', cors()); // enable pre-flight request for DELETE request
 
 function newJob (name, priority){
   console.log('Creating a new ' + name);
+  numberOfJobsInQueue++;
   name = name || 'Default_Name'; 
   priority = priority || 'normal';
   var job = jobs.create('new job', {
@@ -23,6 +25,7 @@ function newJob (name, priority){
   job
     .on('complete', function (){
       console.log('Job', job.id, 'with name', job.data.name, 'is done');
+      numberOfJobsInQueue--;
       setTimeout(()=>{
         newJob('Automatic Job');
       }, AUTOJOBTIMEOUT)
@@ -46,24 +49,28 @@ jobs.activeCount( function( err, total ) { // others are activeCount, completeCo
     if( total == 0 ) {
         console.log('No active jobs, starting an automated task');
         newJob('Automatic Job');
+    } else {
+      numberOfJobsInQueue = total;
     }
   });
 
-async function checkJobStatus(deactivate) {
-   await jobs.active( async function( err, ids) {
-    return await ids.forEach( async function( id ) {
-      await kue.Job.get( id, async function( err, job ) {
-        deactivate && job.inactive();
-      });
-    });
-  });
+function checkJobStatus(deactivate) {
+  return  new Promise(function(resolve, reject){
+      jobs.active( function( err, ids) {
+        resolve(ids.length);
+         ids.forEach(function( id ) {
+         kue.Job.get( id,   function( err, job ) {
+          deactivate &&  job.inactive();
+       });
+     });
+   })
+  })
 }
 
 app.get('/task', function (req, res) {
-  console.log('got a request');
   newJob('Manual Job', 'high');
   jobs.activeCount( function( err, total ) { // others are activeCount, completeCount, failedCount, delayedCount
-    if (total <= MAXQUEUE) {
+    if (total <= MAXQUEUE + 5) {
       setTimeout(()=>{
         res.sendStatus(200);
       }, NETWORKTIME)
@@ -75,10 +82,12 @@ app.get('/task', function (req, res) {
 })
 
 app.get('/queue', function (req, res) {
-  checkJobStatus(false).then((data)=>{
-    console.log(data);
-    res.send(JSON.stringify({data}));
-  })
+  console.log('numberOfJobsInQueue: ', numberOfJobsInQueue);
+  res.send(JSON.stringify({numberOfJobsInQueue}));
+  // checkJobStatus(false).then((data)=>{
+  //   console.log('data:', data);
+  //   res.send(JSON.stringify({data}));
+  // }).catch((err)=>{console.log('error: ', err)});
 })
 checkJobStatus(true);
 app.listen(5000);

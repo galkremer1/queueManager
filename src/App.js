@@ -34,12 +34,11 @@ class App extends Component {
     listCurrentJobs = () => {
         axios.get('http://localhost:5000/queue')
         .then(response => {
-            console.log('res: ', response);
             this.setState({
-                currentJobs: response,
+                currentJobs: response.data.numberOfJobsInQueue.toString(),
             });
         }).catch((err)=> {
-            console.err(err);
+            console.error(err);
         });
     }
     render() {
@@ -53,6 +52,12 @@ class App extends Component {
                     </div>
                 }
                 <Button bsStyle="primary" bsSize="large" block  onClick={this.listCurrentJobs}>Get Current Job Queue</Button>
+                {
+                    this.state.currentJobs && 
+                    <div>
+                        Number of current jobs: {this.state.currentJobs}
+                    </div>
+                }
 
             </div>
         );
