@@ -3,7 +3,7 @@ import axios from 'axios';
 import Button from 'react-bootstrap/lib/Button';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './App.css';
-import Header from './components/Header';
+import MaskComp from './components/MaskComp';
 
 //import  from './components'
 
@@ -58,7 +58,7 @@ class App extends Component {
                         Number of current jobs: {this.state.currentJobs}
                     </div>
                 }
-
+                <MaskComp/>
             </div>
         );
     }

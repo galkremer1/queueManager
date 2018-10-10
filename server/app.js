@@ -1,6 +1,8 @@
 var kue = require('kue')
   , jobs = kue.createQueue()
   ;
+const cities = require("all-the-cities")
+const countries = require('./countries');
 let express = require('express');
 let app = express();
 var cors = require('cors');
@@ -9,6 +11,7 @@ const JOBTIME = 1000 * 15;
 const NETWORKTIME = 1000;
 const AUTOJOBTIMEOUT = 10 * 1000;
 let numberOfJobsInQueue = 0;
+
 
 app.use(cors())
 app.options('/task', cors()); // enable pre-flight request for DELETE request
@@ -89,5 +92,39 @@ app.get('/queue', function (req, res) {
   //   res.send(JSON.stringify({data}));
   // }).catch((err)=>{console.log('error: ', err)});
 })
-checkJobStatus(true);
+
+
+
+////////
+app.get('/iscityorcountry', function (req, res) {
+  const inputArr = req.query.query;
+  let newArr = [];
+  isCity = function (arg) {
+    return cities.filter(city => {
+      return city.name.toLowerCase() == arg.toLowerCase(); 
+    });
+  }
+   isCountry = function (arg) { 
+      return countries.countries.filter(country => {
+       return country.name.toLowerCase() == arg.toLowerCase(); 
+    }) 
+  }
+  inputArr.forEach((t)=>{
+    let country = isCountry(t);
+    let city = isCity(t);
+    if (country.length > 0 ) {
+      newArr.push('<COUNTRY>');
+    } else if (city.length > 0 ) {
+      newArr.push('<CITY>');
+    } else {
+      newArr.push(t);
+    }
+  })
+
+  res.send(JSON.stringify({newArr}));
+})
+///////
+
+// checkJobStatus(true);
+
 app.listen(5000);
