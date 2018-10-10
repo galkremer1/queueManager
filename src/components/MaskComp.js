@@ -11,8 +11,6 @@ class MaskComp extends Component {
         };
     }
 
-
-
     maskText = () => {
         let inputText = this.state.inputText;
         let inputTextArr = inputText.split(' ');
@@ -25,9 +23,9 @@ class MaskComp extends Component {
             this.setState({
                 maskedText: response.data.newArr.join(' ')
             });
-        }).catch(function (error) {
-            console.log(error);
-          });;
+        }).catch((err)=> {
+            console.error(err);
+        });
     }
 
     handleChange = (event) => {

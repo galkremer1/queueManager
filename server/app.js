@@ -99,19 +99,29 @@ app.get('/queue', function (req, res) {
 app.get('/iscityorcountry', function (req, res) {
   const inputArr = req.query.query;
   let newArr = [];
-  isCity = function (arg) {
-    return cities.filter(city => {
-      return city.name.toLowerCase() == arg.toLowerCase(); 
-    });
+  const ccobj = {
+    countries: countries.countries,
+    cities: cities
   }
-   isCountry = function (arg) { 
-      return countries.countries.filter(country => {
-       return country.name.toLowerCase() == arg.toLowerCase(); 
-    }) 
-  }
+  // isCity = function (arg) {
+  //   return cities.filter(city => {
+  //     return city.name.toLowerCase() == arg.toLowerCase(); 
+  //   });
+  // }
+  //  isCountry = function (arg) { 
+  //     return countries.countries.filter(country => {
+  //      return country.name.toLowerCase() == arg.toLowerCase(); 
+  //   }) 
+  // }
+  isCountryOrCity = function (query, list) { 
+    return ccobj[list].filter(c => {
+     return c.name.toLowerCase() == query.toLowerCase(); 
+  }) 
+}
   inputArr.forEach((t)=>{
-    let country = isCountry(t);
-    let city = isCity(t);
+    let country = isCountryOrCity(t, 'countries');
+    let city = isCountryOrCity(t, 'cities');
+
     if (country.length > 0 ) {
       newArr.push('<COUNTRY>');
     } else if (city.length > 0 ) {
