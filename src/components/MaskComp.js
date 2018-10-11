@@ -10,10 +10,24 @@ class MaskComp extends Component {
             inputText: ''
         };
     }
-
+    maskEmails = (inputTextArr) => {
+        function validateEmail(email) {
+            var re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+            return re.test(String(email).toLowerCase());
+        }
+        return inputTextArr.map((element)=> {
+            let isEmail = validateEmail(element);
+            if (isEmail) {
+                return '<EMAIL>';
+            } else {
+                return element;
+            }
+        })
+    }
     maskText = () => {
         let inputText = this.state.inputText;
         let inputTextArr = inputText.split(' ');
+        inputTextArr = this.maskEmails(inputTextArr);
         axios.get('http://localhost:5000/iscityorcountry', {
             params: {
                 query: inputTextArr

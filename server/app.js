@@ -3,6 +3,7 @@ var kue = require('kue')
   ;
 const cities = require("all-the-cities")
 const countries = require('./countries');
+const randomNames = require('./names');
 let express = require('express');
 let app = express();
 var cors = require('cors');
@@ -103,27 +104,26 @@ app.get('/iscityorcountry', function (req, res) {
     countries: countries.countries,
     cities: cities
   }
-  // isCity = function (arg) {
-  //   return cities.filter(city => {
-  //     return city.name.toLowerCase() == arg.toLowerCase(); 
-  //   });
-  // }
-  //  isCountry = function (arg) { 
-  //     return countries.countries.filter(country => {
-  //      return country.name.toLowerCase() == arg.toLowerCase(); 
-  //   }) 
-  // }
-  isCountryOrCity = function (query, list) { 
+
+  let isCountryOrCity = function (query, list) { 
     return ccobj[list].filter(c => {
-     return c.name.toLowerCase() == query.toLowerCase(); 
-  }) 
-}
+      return (c.name.length > 2 && c.name.toLowerCase() == query.toLowerCase()); 
+    }) 
+  }
+  let checkIfName = function (query) { 
+    return randomNames.names.filter(c => {
+      return c.toLowerCase() == query.toLowerCase(); 
+      }) 
+  }
   inputArr.forEach((t)=>{
     let country = isCountryOrCity(t, 'countries');
     let city = isCountryOrCity(t, 'cities');
+    let isName = checkIfName(t);
 
     if (country.length > 0 ) {
       newArr.push('<COUNTRY>');
+    } else if (isName.length > 0) {
+      newArr.push('<NAME>');
     } else if (city.length > 0 ) {
       newArr.push('<CITY>');
     } else {

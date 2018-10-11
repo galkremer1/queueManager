@@ -5,8 +5,6 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import './App.css';
 import MaskComp from './components/MaskComp';
 
-//import  from './components'
-
 class App extends Component {
     constructor(props) {
         super(props);
