@@ -12,15 +12,22 @@ class MaskComp extends Component {
     }
     maskEmails = (inputTextArr) => {
         function validateEmail(email) {
-            var re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+            let re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
             return re.test(String(email).toLowerCase());
         }
+        function validateNumber(number) {
+            let re = /^((\+)?)([\s-.\(\)]*\d{1}){8,13}$/;
+            return re.test(number);
+        }
         return inputTextArr.map((element)=> {
-            let isEmail = validateEmail(element);
-            if (isEmail) {
+            if (validateEmail(element)) {
                 return '<EMAIL>';
             } else {
-                return element;
+                if (validateNumber(element)) {
+                    return '<NUMBER>';
+                } else {
+                    return element;
+                }
             }
         })
     }
@@ -45,6 +52,9 @@ class MaskComp extends Component {
     handleChange = (event) => {
         this.setState({inputText: event.target.value});
     }
+    clearText = () => {
+        this.setState({maskedText: ''});
+    }
     render() {
         return ( 
             <div>
@@ -55,9 +65,14 @@ class MaskComp extends Component {
                 <Button bsStyle="primary" bsSize="large" block onClick={this.maskText.bind(this)}>Mask Text</Button>
                 {
                     this.state.maskedText && 
+                    <div>
+                        <h2>Masked Text</h2>
                         <div>
                             {this.state.maskedText}
                         </div>
+                        <Button bsStyle="primary" bsSize="large" block onClick={this.clearText}>Clear</Button>
+
+                    </div>
                 }
             </div>
 
