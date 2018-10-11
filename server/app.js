@@ -15,7 +15,7 @@ let numberOfJobsInQueue = 0;
 
 
 app.use(cors())
-app.options('/task', cors()); // enable pre-flight request for DELETE request
+app.options('/task', cors()); 
 
 
 function newJob (name, priority){
@@ -45,7 +45,6 @@ jobs.process('new job', MAXQUEUE ,function (job, done){
   /* carry out all the job function here */
   setTimeout(()=>{done && done();}, JOBTIME, this)
 });
-
 
 
 jobs.activeCount( function( err, total ) { // others are activeCount, completeCount, failedCount, delayedCount
@@ -133,8 +132,7 @@ app.get('/iscityorcountry', function (req, res) {
 
   res.send(JSON.stringify({newArr}));
 })
-///////
 
-// checkJobStatus(true);
+checkJobStatus(true);
 
 app.listen(5000);
