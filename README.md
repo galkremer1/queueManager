@@ -1,5 +1,5 @@
  # Instructions
- Make sure the redis server is running <br/ >
+ Make sure the redis server is running <br />
  $ git clone https://github.com/galkremer1/queueManager.git <br />
  $ cd queueManager <br />
  $ npm install <br />
